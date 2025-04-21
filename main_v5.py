@@ -1,5 +1,6 @@
 import pygame
 import time
+import random
 pygame.init()
 
 black = (0, 0, 0)
@@ -11,11 +12,13 @@ class Main:
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font("assets/lemonmilk.ttf", 50)
         self.llama = Llama(200, 500)
-        self.obstacle = Obstacle(400, 500)
+        self.obstacles = [Obstacle(1000 + i * 300, 0, random.choice([1.0, 0.9, 0.8])) for i in range(2)]  # Start with 2 obstacles
         self.quit_game = False
         self.game_over = False
         self.score = 0
-
+        self.spawn_timer = 0
+        self.spawn_interval = 120  # Frames between spawns (decreases over time)
+        self.min_spawn_interval = 40  # Minimum interval for difficulty
 
     def initialize_game(self):
         """Sets up game window"""
@@ -33,12 +36,25 @@ class Main:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.quit_game = True
-            self.handle_input()  # Handle user input
+            self.handle_input()
             self.screen.blit(background, (0, 0))
-            self.llama.update()  # Update llama position
+            self.llama.update()
+            # Update and draw obstacles
+            for obstacle in self.obstacles:
+                obstacle.update()
+                obstacle.draw(self.screen)
+            # Remove obstacles that have gone off screen
+            self.obstacles = [obs for obs in self.obstacles if obs.x > -obs.size]
+            # Spawn new obstacles at intervals, increasing frequency over time
+            self.spawn_timer += 1
+            if self.spawn_timer >= self.spawn_interval:
+                self.spawn_timer = 0
+                scale = random.choice([1.0, 0.9, 0.8])
+                self.obstacles.append(Obstacle(1000, 0, scale))
+                # Increase difficulty by reducing spawn interval, but not below minimum
+                if self.spawn_interval > self.min_spawn_interval:
+                    self.spawn_interval -= 2
             self.llama.draw(self.screen)
-            self.obstacle.update()  # Update obstacle position
-            self.obstacle.draw(self.screen)  # Draw obstacle
             pygame.display.flip()
             self.clock.tick(60)
 
@@ -110,18 +126,18 @@ class Llama:
         screen.blit(resized_llama, (self.x, self.y))
 
 class Obstacle:
-    def __init__(self, x, y):
+    def __init__(self, x, y, scale=0.8):
+        base_size = 50
+        self.size = int(base_size * scale)
         self.x = x
-        self.y = 425 - 48  # Adjusted y position for new height (60 * 0.8 = 48)
+        self.y = 425 - self.size  # Adjust y for new height
         self.image = pygame.image.load("assets/cactus.png")
-        self.image = pygame.transform.scale(self.image, (48, 48))  # 60 * 0.8 = 48
-        self.speed = 5  # Speed of obstacle movement
+        self.image = pygame.transform.scale(self.image, (self.size, self.size))
+        self.speed = 5
 
     def update(self):
         """Move the obstacle to the left"""
         self.x -= self.speed
-        if self.x < -48:  # Reset position when off-screen
-            self.x = 1000
 
     def draw(self, screen):
         """Draw the obstacle on the screen"""
