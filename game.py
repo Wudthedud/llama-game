@@ -83,10 +83,12 @@ class Game:
         self.screen.blit(bg, (0, 0))
         title = self.font.render("Llama Game - Daniel Wu", True, (255, 255, 0))
         hs_text = self.small_font.render(f"High Score: {self.highscore:.1f}s", True, white)
-        info = self.small_font.render("Press ESC to Start", True, white)
+        jump_info = self.small_font.render("Press SPACE to Jump", True, white)
+        esc_info = self.small_font.render("Press ESC to Start/Pause/Unpause", True, white)
         self.screen.blit(title, title.get_rect(center=(500, 250)))
         self.screen.blit(hs_text, hs_text.get_rect(center=(500, 320)))
-        self.screen.blit(info, info.get_rect(center=(500, 400)))
+        self.screen.blit(jump_info, jump_info.get_rect(center=(500, 380)))
+        self.screen.blit(esc_info, esc_info.get_rect(center=(500, 430)))
 
     def update_game(self, bg):
         self.handle_input()

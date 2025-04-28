@@ -16,6 +16,6 @@ class Obstacle:
         screen.blit(self.image, (self.x, self.y))
 
     def get_rect(self):
-        margin = 0.3
+        margin = 0.5
         shrink = int(self.size * margin)
         return pygame.Rect(self.x + shrink // 2, self.y + shrink // 2, self.size - shrink, self.size - shrink)
