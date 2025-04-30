@@ -44,19 +44,19 @@ class Main:
             with open("highscore.txt", "r", encoding="utf-8") as highscore_file:
                 value = highscore_file.read().strip()
                 if not value:
-                    return 0
-                return int(value)
+                    return 0.0
+                return float(value)
         except IOError:
             with open("highscore.txt", "w", encoding="utf-8") as highscore_file:
-                highscore_file.write("0")
-            return 0
+                highscore_file.write("0.0")
+            return 0.0
 
     def update_high_score(self, score):
         """Update high score in file"""
         highscore = self.load_high_score()
         if score > highscore:
             with open("highscore.txt", "w", encoding="utf-8") as highscore_file:
-                highscore_file.write(str(score))
+                highscore_file.write(str(float(score)))
 
 
 
